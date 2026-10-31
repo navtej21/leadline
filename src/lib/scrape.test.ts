@@ -1,5 +1,5 @@
 import { test, expect } from "vitest";
-import { isSafeDomain } from "./domain/safedomain";
+import { extractHtml, isSafeDomain } from "./domain/safedomain";
 
 
 test("allows a normal domain", () => {
@@ -21,4 +21,25 @@ test("blocks localhost and internal hosts", () => {
 test("allows subdomains and country domains", () => {
   expect(isSafeDomain("app.zoho.com")).toBe(true);
   expect(isSafeDomain("tcs.co.in")).toBe(true);
+});
+
+
+test("keep the title",()=>{
+    const html="<html><head><title>Zoho</title></head></html>";
+    expect(extractHtml(html)).toBe("Title: zoho");
+})
+
+
+test("empty page gives an empty string",()=>{
+    const html="";
+    expect(extractHtml(html)).toBe("");
+})
+
+
+test("keeps the meta description", () => {
+  const html = `<html><head>
+    <title>Zoho</title>
+    <meta name="description" content="Business software for everyone.">
+  </head></html>`;
+  expect(extractHtml(html)).toBe("Title: Zoho\nDescription: Business software for everyone.");
 });
